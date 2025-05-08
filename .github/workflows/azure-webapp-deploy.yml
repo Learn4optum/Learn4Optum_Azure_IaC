@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App
+name: Deploy to Azure
 
 on:
   push:
@@ -6,22 +6,18 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to Azure
+      - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'my-webapp-name'              # 👈 Your Azure Web App name
-          slot-name: 'production'
-          publish-profile: ''
-          package: '.'                            # 👈 Change if deploying a build artifact
+      # Add additional Azure CLI or deploy steps here
+      - name: List Azure Resources (Example)
+        run: az resource list
