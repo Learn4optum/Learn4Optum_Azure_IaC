@@ -19,5 +19,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # Add additional Azure CLI or deploy steps here
-      - name: List Azure Resources (Example)
-        run: az resource list
+      name: Create Resource Group
+        run: |
+          az group create \
+            --name my-resource-group \
+            --location eastus
