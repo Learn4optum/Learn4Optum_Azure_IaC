@@ -1,25 +1,22 @@
-name: Deploy to Azure
+name: Create Azure Resource Group
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:  # Manual trigger via GitHub UI
 
 jobs:
-  deploy:
+  create-rg:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Azure
+      - name: Log in to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Add additional Azure CLI or deploy steps here
-      name: Create Resource Group
+      - name: Create Resource Group
         run: |
           az group create \
             --name my-resource-group \
