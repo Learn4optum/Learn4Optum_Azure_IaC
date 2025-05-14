@@ -9,3 +9,4 @@ subnet_name     = "mes-aks-subnet"
 subnet_prefixes = ["10.0.1.0/24"]
 
 environment = "dev"
+
