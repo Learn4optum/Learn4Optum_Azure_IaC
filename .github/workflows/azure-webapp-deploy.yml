@@ -31,8 +31,13 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
         run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
+
