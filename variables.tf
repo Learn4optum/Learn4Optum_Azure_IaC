@@ -15,8 +15,11 @@ variable "subscription_id" {
 }
 
 variable "vnet_name" {
-  description = "Name of the Virtual Network"
-  type        = string
+  type = map(object({
+    name          = string
+    address_space = list(string)
+  }))
+  description = "Map of VNets to create"
 }
 
 variable "address_space" {
