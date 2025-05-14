@@ -26,3 +26,11 @@ resource "azurerm_subnet" "main" {
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = var.subnet_prefixes
 }
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "MES-DEV-RG"
+    storage_account_name = "mesdevstrg"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
+}
