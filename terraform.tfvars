@@ -1,4 +1,4 @@
-resource_group_name     = "MES-UAT-RG1"
+resource_group_name     = "MES-UAT-RG2"
 resource_group_location = "East US"
 subscription_id = "edd8e9bb-437a-457e-af2d-66f4db2fe514"
 vnet_name     = "mes-vnet1"
