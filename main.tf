@@ -4,8 +4,8 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "main" {
-  name     = MES-UAT-RG
-  location = East US
+  name     = "MES-UAT-RG"
+  location = "East US"
 }
 
 resource "azurerm_virtual_network" "main" {
