@@ -30,7 +30,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars" -lock=false"
+        run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
-        run: terraform plan -var-file="terraform.tfvars" -lock=false"
+        run: terraform plan -var-file="terraform.tfvars"
