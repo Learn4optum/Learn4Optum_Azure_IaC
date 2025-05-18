@@ -13,37 +13,3 @@ variable "subscription_id" {
   description = "Azure Subscription ID"
   type        = string
 }
-
-variable "vnet_name" {
-  type = map(object({
-    name          = string
-    address_space = list(string)
-  }))
-  description = "Map of VNets to create"
-}
-
-variable "address_space" {
-  description = "Address space for the VNet"
-  type        = list(string)
-}
-
-variable "dns_servers" {
-  description = "Optional custom DNS servers"
-  type        = list(string)
-  default     = []
-}
-
-variable "subnet_name" {
-  description = "Name of the Subnet"
-  type        = string
-}
-
-variable "subnet_prefixes" {
-  description = "Address prefixes for the subnet"
-  type        = list(string)
-}
-
-variable "environment" {
-  description = "Environment tag (e.g., dev, prod)"
-  type        = string
-}
