@@ -1,3 +1,5 @@
 resource_group_name     = "MES-UAT-RG"
 resource_group_location = "East US"
+resource_group_name     = "MES-UAT-Phase1"
+resource_group_location = "East US"
 subscription_id = "edd8e9bb-437a-457e-af2d-66f4db2fe514"
