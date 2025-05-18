@@ -1,12 +1,19 @@
 provider "azurerm" {
   features {}
-  subscription_id = var.subscription_id
 }
 
-resource "azurerm_resource_group" "main" {
-  name     = var.resource_group_name
-  location = var.resource_group_location
+resource "azurerm_resource_group" "rg" {
+  for_each = var.resource_groups
+
+  name     = each.value.name
+  location = each.value.location
+
+  tags = {
+    environment = each.key
+    created_by  = "terraform"
+  }
 }
+
 
 
 terraform {
