@@ -1,9 +1,22 @@
 name: 'Terraform Azure Deployment'
+run-name: Apply to NonProd
 
 on:
+  pull_request: 
+    branches:
+      - main
   push:
     branches:
       - main
+      
+concurrency:
+  group: ${{ github.workflow}}-nonprod-${{ github.ref }}
+  cancel-in-progress: false
+  
+permissions:
+  id-token: write    
+  contents: read     
+
 
 jobs:
   terraform:
