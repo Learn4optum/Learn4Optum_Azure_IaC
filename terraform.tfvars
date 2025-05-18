@@ -1,5 +1,6 @@
 resource_group_name     = "MES-UAT-RG"
 location                = "East US"
+subscription_id = "edd8e9bb-437a-457e-af2d-66f4db2fe514"
 
 vnet_name               = "vnet-uat"
 vnet_address_space      = ["10.0.0.0/16"]
