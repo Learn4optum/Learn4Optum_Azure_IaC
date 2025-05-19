@@ -2,20 +2,9 @@ name: 'Terraform Azure Deployment'
 run-name: Apply to NonProd
 
 on:
-  pull_request: 
-    branches:
-      - main
   push:
     branches:
       - main
-      
-concurrency:
-  group: ${{ github.workflow}}-nonprod-${{ github.ref }}
-  cancel-in-progress: false
-  
-permissions:
-  id-token: write    
-  contents: read     
 
 jobs:
   terraform:
@@ -45,4 +34,5 @@ jobs:
         run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
-        run: terraform apply -var-file="terraform.tfvars"
+        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+
