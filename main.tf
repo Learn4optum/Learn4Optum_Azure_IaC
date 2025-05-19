@@ -30,25 +30,17 @@ resource "azurerm_subnet" "subnets" {
 
 resource "azurerm_storage_account" "storage" {
   name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = azurerm_resource_group.main.location
   account_tier             = var.account_tier
   account_replication_type = var.replication_type
-  allow_blob_public_access = false
+  #allow_blob_public_access = false
 
   tags = {
     environment = var.environment
   }
 }
 
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "MES-DEV-RG"
-    storage_account_name = "mesdevstrg"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
-}
 
 
 
