@@ -5,9 +5,10 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = var.resource_group_name
-  location = var.location
+  name     = "MES-DEV-RG"
+  location = "eastus"  # or whatever region is appropriate
 }
+
 
 # Virtual Network
 resource "azurerm_virtual_network" "main" {
