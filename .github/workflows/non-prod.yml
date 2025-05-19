@@ -30,6 +30,9 @@ jobs:
           ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
         run: terraform init
 
+      - name: Terraform Destroy
+       run: terraform destroy -var-file="terraform.tfvars"
+
       - name: Terraform Plan
         run: terraform plan -var-file="terraform.tfvars"
 

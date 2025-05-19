@@ -1,6 +1,6 @@
-resource_group_name     = "MES-DEV-RG2"
+resource_group_name     = "MES-DEV-RG"
 location                = "East US"
-storage_account_name   = "mystorageacct1234" # must be globally unique, lowercase, 3–24 chars
+storage_account_name   = "mystorageac9849054345" # must be globally unique, lowercase, 3–24 chars
 account_tier           = "Standard"
 replication_type       = "LRS"
 environment            = "dev"
