@@ -5,8 +5,8 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "MES-DEV-RG"
-  location = "eastus"  # or whatever region is appropriate
+  name     = var.resource_group_name
+  location = var.location
 }
 
 
