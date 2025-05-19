@@ -22,4 +22,8 @@ subnets = [
     name           = "subnet-web"
     address_prefix = "10.0.3.0/24"
   }
+   {
+    name           = "subnet-webapp"
+    address_prefix = "10.0.4.0/24"
+  }
 ]
