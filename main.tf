@@ -28,6 +28,19 @@ resource "azurerm_subnet" "subnets" {
   virtual_network_name = azurerm_virtual_network.main.name
 }
 
+resource "azurerm_storage_account" "storage" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = var.account_tier
+  account_replication_type = var.replication_type
+  allow_blob_public_access = false
+
+  tags = {
+    environment = var.environment
+  }
+}
+
 terraform {
   backend "azurerm" {
     resource_group_name  = "MES-DEV-RG"

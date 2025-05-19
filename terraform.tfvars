@@ -1,5 +1,9 @@
-resource_group_name     = "MES-DEV-RG1"
+resource_group_name     = "MES-DEV-RG2"
 location                = "East US"
+storage_account_name   = "mystorageacct1234" # must be globally unique, lowercase, 3–24 chars
+account_tier           = "Standard"
+replication_type       = "LRS"
+environment            = "dev"
 subscription_id = "edd8e9bb-437a-457e-af2d-66f4db2fe514"
 
 vnet_name               = "vnet-uat"
