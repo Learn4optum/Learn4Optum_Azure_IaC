@@ -7,3 +7,8 @@ variable "location" {
   type        = string
   description = "The Azure location"
 }
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
