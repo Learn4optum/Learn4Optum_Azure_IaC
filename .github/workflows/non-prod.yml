@@ -28,7 +28,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
           ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
           ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-        run: terraform init
+        run: terraform init -backend-config=backend-dev.config
 
       #- name: Terraform Destroy
        # run: terraform destroy -auto-approve -var-file="terraform.tfvars"
