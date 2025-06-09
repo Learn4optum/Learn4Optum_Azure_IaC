@@ -1,0 +1,78 @@
+name: CI/CD Pipeline for AKS
+on:
+  push:
+    branches: [main]
+
+env:
+  ACR_NAME: youracr.azurecr.io
+  IMAGE_NAME: myapp
+  SONAR_HOST_URL: https://your-sonarqube-instance
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  JFROG_URL: https://your-jfrog-instance
+  JFROG_REPO: my-docker-repo
+  PRISMA_CLI: prisma-cloud-scan
+  AZURE_CLUSTER_NAME: your-aks-cluster
+  RESOURCE_GROUP: your-aks-resource-group
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: SonarQube Scan
+      run: |
+        mvn sonar:sonar \
+          -Dsonar.projectKey=myapp \
+          -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    - name: Log in to JFrog
+      run: echo "${{ secrets.JFROG_PASSWORD }}" | docker login ${{ env.JFROG_URL }} -u ${{ secrets.JFROG_USERNAME }} --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+    - name: Twistlock Image Scan
+      run: |
+        ${{ env.PRISMA_CLI }} --dockerfile ./Dockerfile --image ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Push Docker image to JFrog
+      run: docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.JFROG_URL }}/${{ env.JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }} &&
+           docker push ${{ env.JFROG_URL }}/${{ env.JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Import image to ACR
+      run: |
+        az acr import --name ${{ env.ACR_NAME }} \
+          --source ${{ env.JFROG_URL }}/${{ env.JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          --username ${{ secrets.JFROG_USERNAME }} \
+          --password ${{ secrets.JFROG_PASSWORD }}
+
+    - name: Set AKS Context
+      run: az aks get-credentials --name ${{ env.AZURE_CLUSTER_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --overwrite-existing
+
+    - name: Deploy to AKS using Helm
+      run: |
+        helm upgrade --install myapp ./helm/myapp \
+          --set image.repository=${{ env.ACR_NAME }}/${{ env.IMAGE_NAME }} \
+          --set image.tag=${{ github.sha }}
+
+    - name: Post-Deployment Verification
+      run: kubectl get pods -n default
