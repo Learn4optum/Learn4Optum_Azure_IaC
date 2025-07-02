@@ -1,0 +1,84 @@
+name: CI-CD Pipeline with SonarQube, Twistlock, JFrog, ACR, AKS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: SonarQube Scan
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        projectBaseDir: .
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to DockerHub (optional)
+      run: echo "Skipped if not needed"
+
+    - name: Build Docker Image
+      run: |
+        docker build -t myapp:latest .
+
+    - name: Twistlock Scan (Prisma Cloud)
+      env:
+        PRISMA_CONSOLE_URL: ${{ secrets.PRISMA_CONSOLE_URL }}
+        PRISMA_ACCESS_KEY: ${{ secrets.PRISMA_ACCESS_KEY }}
+        PRISMA_SECRET_KEY: ${{ secrets.PRISMA_SECRET_KEY }}
+      run: |
+        curl -s -k -u $PRISMA_ACCESS_KEY:$PRISMA_SECRET_KEY \
+        "$PRISMA_CONSOLE_URL/api/v1/util/twistcli" -o twistcli
+        chmod +x twistcli
+        ./twistcli images scan --address $PRISMA_CONSOLE_URL \
+          --user $PRISMA_ACCESS_KEY --password $PRISMA_SECRET_KEY \
+          myapp:latest
+
+    - name: Push Image to JFrog Artifactory
+      run: |
+        docker login my-jfrog-repo.jfrog.io -u ${{ secrets.JFROG_USERNAME }} -p ${{ secrets.JFROG_PASSWORD }}
+        docker tag myapp:latest my-jfrog-repo.jfrog.io/myrepo/myapp:latest
+        docker push my-jfrog-repo.jfrog.io/myrepo/myapp:latest
+
+  deploy:
+    needs: build-and-scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Pull image from JFrog and push to ACR
+      run: |
+        docker login my-jfrog-repo.jfrog.io -u ${{ secrets.JFROG_USERNAME }} -p ${{ secrets.JFROG_PASSWORD }}
+        docker pull my-jfrog-repo.jfrog.io/myrepo/myapp:latest
+
+        docker login myacr.azurecr.io -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+        docker tag my-jfrog-repo.jfrog.io/myrepo/myapp:latest myacr.azurecr.io/myapp:latest
+        docker push myacr.azurecr.io/myapp:latest
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v3
+
+    - name: AKS Get Credentials
+      run: |
+        az aks get-credentials --name myAKSCluster --resource-group myResourceGroup
+
+    - name: Deploy to AKS using Helm
+      run: |
+        helm upgrade --install myapp ./helm-chart \
+          --set image.repository=myacr.azurecr.io/myapp \
+          --set image.tag=latest
